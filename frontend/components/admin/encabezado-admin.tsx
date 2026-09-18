@@ -6,7 +6,8 @@ import Image from "next/image";
 import Link from "next/link";
 import { motion } from "framer-motion";
 import { KeyRound, LayoutDashboard, LogOut, ShieldCheck } from "lucide-react";
-import type { SesionAdmin } from "@/lib/auth";
+import type { SesionAdmin } from "@/lib/usar-sesion-admin";
+import { apiFetch } from "@/lib/api-cliente";
 
 const VISTAS = [
   { href: "/admin", etiqueta: "Panel admin", icono: LayoutDashboard },
@@ -36,7 +37,7 @@ export function EncabezadoAdmin({ sesion, titulo, subtitulo }: Props) {
   );
 
   async function cerrarSesion() {
-    await fetch("/api/auth/logout", { method: "POST" });
+    await apiFetch("/api/auth/logout", { method: "POST" });
     router.push("/login");
   }
 

@@ -7,6 +7,7 @@ import { PortalSistemas } from "@/components/portal-sistemas";
 import { FondoVideo } from "@/components/fondo-video";
 import { CATEGORIA_TODOS, type Sistema } from "@/lib/sistemas";
 import { usarCarruselProyectos } from "@/lib/usar-carrusel-proyectos";
+import { apiFetch } from "@/lib/api-cliente";
 
 export default function Home() {
   const [busqueda, setBusqueda] = useState("");
@@ -19,7 +20,7 @@ export default function Home() {
   // /admin (bd_gestorp vía /api/proyectos) — ya no hay proyectos de
   // ejemplo hardcodeados en lib/sistemas.ts.
   useEffect(() => {
-    fetch("/api/proyectos")
+    apiFetch("/api/proyectos")
       .then((res) => res.json())
       .then((datos) => {
         setSistemas(datos.sistemas ?? []);

@@ -12,7 +12,6 @@ ENV NODE_ENV=production
 # (standalone) usa esa variable para decidir en qué interfaz escuchar —
 # sin esto el server queda inalcanzable incluso dentro del propio contenedor.
 ENV HOSTNAME="0.0.0.0"
-COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next/standalone ./
 COPY --from=builder /app/.next/static ./.next/static
 EXPOSE 3000

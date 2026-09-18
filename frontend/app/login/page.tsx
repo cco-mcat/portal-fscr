@@ -6,6 +6,7 @@ import Image from "next/image";
 import { motion } from "framer-motion";
 import { ArrowRight, Building2, Eye, EyeOff, Loader2, Lock, User } from "lucide-react";
 import { ParticulasLogin } from "@/components/particulas-login";
+import { apiFetch } from "@/lib/api-cliente";
 
 // Video acotado solo al panel derecho de este login (a diferencia de
 // FondoVideo, que es `fixed inset-0` a propósito para el resto del portal).
@@ -74,7 +75,7 @@ export default function LoginPage() {
     setError(null);
     setCargando(true);
     try {
-      const res = await fetch("/api/auth/login", {
+      const res = await apiFetch("/api/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ usuario, clave }),

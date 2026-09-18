@@ -5,6 +5,7 @@ import { Loader2, UploadCloud } from "lucide-react";
 import { ICONOS_DISPONIBLES } from "@/lib/sistemas";
 import { ICONOS_SISTEMA } from "@/components/iconos-sistema";
 import type { Categoria } from "@/components/admin/panel-admin";
+import { apiFetch } from "@/lib/api-cliente";
 
 type Props = {
   categorias: Categoria[];
@@ -67,7 +68,7 @@ export function FormularioProyecto({ categorias, onCreado, onError }: Props) {
     form.set("fondoLogo", valores.fondoLogo);
     if (!sinLogo && logo) form.set("logo", logo);
 
-    const res = await fetch("/api/admin/proyectos", { method: "POST", body: form });
+    const res = await apiFetch("/api/admin/proyectos", { method: "POST", body: form });
     const datos = await res.json();
     setEnviando(false);
     if (!res.ok) {

@@ -4,12 +4,13 @@ import { useEffect, useMemo, useState } from "react";
 import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import { AlertTriangle, FolderKanban, FolderPlus, LayoutGrid, Tags, Trash2 } from "lucide-react";
-import type { SesionAdmin } from "@/lib/auth";
+import type { SesionAdmin } from "@/lib/usar-sesion-admin";
 import { EncabezadoAdmin } from "@/components/admin/encabezado-admin";
 import { FormularioProyecto } from "@/components/admin/formulario-proyecto";
 import { ListaProyectos, type Proyecto } from "@/components/admin/lista-proyectos";
 import { Modal } from "@/components/admin/modal";
 import { TarjetaAccion } from "@/components/admin/tarjeta-accion";
+import { apiFetch } from "@/lib/api-cliente";
 
 const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as const;
 
@@ -29,8 +30,8 @@ export function PanelAdmin({ sesion }: { sesion: SesionAdmin }) {
   async function cargarTodo() {
     setError(null);
     const [resCategorias, resProyectos] = await Promise.all([
-      fetch("/api/admin/categorias"),
-      fetch("/api/admin/proyectos"),
+      apiFetch("/api/admin/categorias"),
+      apiFetch("/api/admin/proyectos"),
     ]);
     if (resCategorias.status === 401 || resProyectos.status === 401) {
       router.push("/login");
@@ -52,7 +53,7 @@ export function PanelAdmin({ sesion }: { sesion: SesionAdmin }) {
     e.preventDefault();
     const nombre = nombreCategoria.trim();
     if (!nombre) return;
-    const res = await fetch("/api/admin/categorias", {
+    const res = await apiFetch("/api/admin/categorias", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre }),
@@ -70,7 +71,7 @@ export function PanelAdmin({ sesion }: { sesion: SesionAdmin }) {
   async function confirmarBorrarCategoria() {
     if (!categoriaAConfirmar) return;
     setBorrandoCategoria(true);
-    const res = await fetch(`/api/admin/categorias/${categoriaAConfirmar.id}`, { method: "DELETE" });
+    const res = await apiFetch(`/api/admin/categorias/${categoriaAConfirmar.id}`, { method: "DELETE" });
     const datos = await res.json();
     setBorrandoCategoria(false);
     if (!res.ok) {

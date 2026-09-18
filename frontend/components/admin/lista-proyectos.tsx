@@ -7,6 +7,7 @@ import { AlertTriangle, FolderKanban, Plus, Trash2 } from "lucide-react";
 import { ICONOS_SISTEMA } from "@/components/iconos-sistema";
 import type { IconoSistema } from "@/lib/sistemas";
 import { Modal } from "@/components/admin/modal";
+import { apiFetch } from "@/lib/api-cliente";
 
 export type FondoLogo = "claro" | "oscuro";
 
@@ -58,7 +59,7 @@ export function ListaProyectos({ proyectos, onCambio, onError, onAgregar }: Prop
   async function confirmarBorrar() {
     if (!aConfirmar) return;
     setBorrando(true);
-    const res = await fetch(`/api/admin/proyectos/${aConfirmar.id}`, { method: "DELETE" });
+    const res = await apiFetch(`/api/admin/proyectos/${aConfirmar.id}`, { method: "DELETE" });
     const datos = await res.json();
     setBorrando(false);
     if (!res.ok) {
@@ -73,7 +74,7 @@ export function ListaProyectos({ proyectos, onCambio, onError, onAgregar }: Prop
   async function guardarFondoLogo(fondoLogo: FondoLogo) {
     if (!editando) return;
     setGuardando(true);
-    const res = await fetch(`/api/admin/proyectos/${editando.id}`, {
+    const res = await apiFetch(`/api/admin/proyectos/${editando.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ fondoLogo }),
@@ -92,7 +93,7 @@ export function ListaProyectos({ proyectos, onCambio, onError, onAgregar }: Prop
     if (!editando) return;
     const nuevoActivo = editando.activo !== 1;
     setGuardando(true);
-    const res = await fetch(`/api/admin/proyectos/${editando.id}`, {
+    const res = await apiFetch(`/api/admin/proyectos/${editando.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ activo: nuevoActivo }),
@@ -124,7 +125,7 @@ export function ListaProyectos({ proyectos, onCambio, onError, onAgregar }: Prop
       return;
     }
     setGuardando(true);
-    const res = await fetch(`/api/admin/proyectos/${editando.id}`, {
+    const res = await apiFetch(`/api/admin/proyectos/${editando.id}`, {
       method: "PATCH",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ nombre, descripcion }),

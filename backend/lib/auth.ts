@@ -103,7 +103,11 @@ export async function crearCookieSesion(sesion: SesionAdmin, seguro: boolean) {
   store.set(NOMBRE_COOKIE, token, {
     httpOnly: true,
     secure: seguro,
-    sameSite: "lax",
+    // "lax" no viaja en un fetch cross-site (solo en navegación top-level),
+    // y frontend (app.fscr.com.co) y backend (api-fscr.analisisinteligente.com.co)
+    // ya son orígenes distintos — sin "none" el login nunca guardaría sesión.
+    // "none" exige Secure=true, por eso depende del mismo flag.
+    sameSite: seguro ? "none" : "lax",
     path: "/",
     maxAge: DURACION_SESION_SEGUNDOS,
   });

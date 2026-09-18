@@ -18,10 +18,11 @@ import {
   UserCircle2,
   X,
 } from "lucide-react";
-import type { SesionAdmin } from "@/lib/auth";
+import type { SesionAdmin } from "@/lib/usar-sesion-admin";
 import { EncabezadoAdmin } from "@/components/admin/encabezado-admin";
 import { Modal } from "@/components/admin/modal";
 import { validarClaveMaestra } from "@/lib/validacion-clave";
+import { apiFetch } from "@/lib/api-cliente";
 
 const EASE_OUT_QUAD = [0.25, 0.46, 0.45, 0.94] as const;
 
@@ -84,7 +85,7 @@ export function PanelCredenciales({ sesion }: { sesion: SesionAdmin }) {
 
   async function cargarTodo() {
     setError(null);
-    const res = await fetch("/api/admin/credenciales");
+    const res = await apiFetch("/api/admin/credenciales");
     if (res.status === 401) {
       router.push("/login");
       return;
@@ -126,7 +127,7 @@ export function PanelCredenciales({ sesion }: { sesion: SesionAdmin }) {
     if (!objetivo) return;
     setDesbloqueando(true);
     setErrorDesbloqueo(null);
-    const res = await fetch(`/api/admin/credenciales/${objetivo.credencial.id}/desbloquear`, {
+    const res = await apiFetch(`/api/admin/credenciales/${objetivo.credencial.id}/desbloquear`, {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ claveUsuario, claveContenedor }),
@@ -193,12 +194,12 @@ export function PanelCredenciales({ sesion }: { sesion: SesionAdmin }) {
       items: items.filter((it) => it.etiqueta.trim() && it.valor.trim()),
     };
     const res = esNueva
-      ? await fetch("/api/admin/credenciales", {
+      ? await apiFetch("/api/admin/credenciales", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cuerpo),
         })
-      : await fetch(`/api/admin/credenciales/${(modalAbierto as Credencial).id}`, {
+      : await apiFetch(`/api/admin/credenciales/${(modalAbierto as Credencial).id}`, {
           method: "PUT",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(cuerpo),
@@ -225,7 +226,7 @@ export function PanelCredenciales({ sesion }: { sesion: SesionAdmin }) {
     if (!aConfirmar) return;
     setBorrando(true);
     setErrorBorrar(null);
-    const res = await fetch(`/api/admin/credenciales/${aConfirmar.id}`, {
+    const res = await apiFetch(`/api/admin/credenciales/${aConfirmar.id}`, {
       method: "DELETE",
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ claveUsuario: claveUsuarioBorrar, claveContenedor: claveContenedorBorrar }),
