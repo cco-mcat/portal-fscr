@@ -4,6 +4,8 @@ services:
     container_name: portal-fscr
     restart: unless-stopped
     env_file: .env.local
+    ports:
+      - "8090:3000"
     networks:
       - mis-servicios_mis-servicios-net
 
