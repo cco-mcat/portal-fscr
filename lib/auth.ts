@@ -86,14 +86,23 @@ export async function validarLogin(
   };
 }
 
-export async function crearCookieSesion(sesion: SesionAdmin) {
+/**
+ * `seguro` decide el atributo `Secure` de la cookie y SIEMPRE debe reflejar
+ * si la petición actual llegó por HTTPS real (ver app/api/auth/login/route.ts) —
+ * nunca `NODE_ENV === "production"` a secas: ese chequeo marca la cookie
+ * como Secure aunque el sitio se sirva por HTTP plano (ej. acceso directo
+ * por IP:puerto sin nginx/TLS delante todavía), y un navegador DESCARTA en
+ * silencio cualquier cookie Secure recibida por una conexión no-HTTPS — el
+ * login responde 200 pero la sesión nunca queda guardada.
+ */
+export async function crearCookieSesion(sesion: SesionAdmin, seguro: boolean) {
   const token = jwt.sign(sesion, process.env.AUTH_JWT_SECRET!, {
     expiresIn: DURACION_SESION_SEGUNDOS,
   });
   const store = await cookies();
   store.set(NOMBRE_COOKIE, token, {
     httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    secure: seguro,
     sameSite: "lax",
     path: "/",
     maxAge: DURACION_SESION_SEGUNDOS,
