@@ -169,7 +169,7 @@ export default function LoginPage() {
             <Building2 className="size-4" />
             <span className="font-bold text-brand-blue-claro">FSCR</span> · CCO —{" "}
             <span className="texto-recorrido font-bold">
-              Departamento de Innovación Tecnológica
+              Área de Innovación Tecnológica
             </span>
           </motion.div>
         </div>
