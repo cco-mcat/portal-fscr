@@ -1,26 +1,437 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
+/* ============================================================
+   Portal FSCR — sistema de diseño claro, corporativo
+   Heredado de la identidad visual real de producción:
+   · NC (assets/css/app.css): indigo/azul #6366f1 / #3b82f6,
+     tarjetas blancas, sombras suaves, radios 6/10/14px
+   · PIGO (app.fscr.com.co/proyecciones, :root del index):
+     navy #131841 → azul eléctrico #0010f1, acento cian #0ADCE4,
+     tipografía Poppins
+   ============================================================ */
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
-}
+@theme {
+  --font-display: var(--font-poppins), "Segoe UI", system-ui, sans-serif;
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+  --color-bg: #eef3fc;
+  --color-surface: #ffffff;
+  --color-raised: #f7faff;
+  --color-line: #e2eaf9;
+  --color-line-soft: #eef4fd;
+
+  --color-ink: #0f172a;
+  --color-ink-dim: #475569;
+  --color-ink-faint: #94a3b8;
+
+  /* Indigo — acento funcional heredado del NC (badges, foco de inputs) */
+  --color-brand: #6366f1;
+  --color-brand-hover: #4f46e5;
+  --color-brand-soft: #eef2ff;
+  --color-brand-line: #c7d2fe;
+
+  /* Azul eléctrico + navy — identidad real de PIGO (valores exactos de su :root) */
+  --color-brand-blue: #0010f1;
+  --color-brand-navy: #131841;
+  --color-brand-cyan: #0adce4;
+
+  /* Versión clara del azul de marca (no cian) — el brand-blue puro (#0010f1)
+     es casi tan oscuro como el navy del fondo del topbar/footer y no se lee
+     bien ahí; el cian sí se leía, pero es azul-verdoso, no "el azul" de la
+     identidad. Esto aclara el MISMO azul (no cambia de tono a cian/indigo)
+     lo justo para que tenga contraste sobre el navy. */
+  --color-brand-blue-claro: color-mix(in srgb, var(--color-brand-blue) 62%, white);
+
+  /* Azul real del logo (fscr Ingeniería S.A.S.) — muestreado del PNG,
+     tono cian-azul rgb(25,145,190). Se usa en dosis mínima para afinar el
+     gradiente del header/footer hacia el mismo tono, sin abandonar el
+     azul eléctrico de PIGO que ya es la identidad base. */
+  --color-logo-azul: #1991be;
+
+  /* Neutro beige/gris — para íconos y chips de la tabla de proyectos.
+     Se quitaron los colores por sistema (indigo/azul/verde/ámbar/naranja):
+     con tantos tonos distintos la tabla se veía poco seria. */
+  --color-neutro-bg: #f2ede2;
+  --color-neutro-linea: #e5ddcc;
+  --color-neutro-texto: #6b6459;
+
+  --radius-sm: 6px;
+  --radius-md: 10px;
+  --radius-lg: 14px;
+
+  --shadow-xs: 0 1px 3px rgba(15, 23, 42, 0.06);
+  --shadow-sm: 0 2px 8px rgba(15, 23, 42, 0.08);
+  --shadow-md: 0 8px 28px rgba(15, 23, 42, 0.1);
+
+  --animate-pulse-soft: pulse-soft 2.2s ease-in-out infinite;
+  --animate-loader: loader-sweep 1.4s ease-in-out infinite;
+
+  @keyframes pulse-soft {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.45; }
+  }
+  @keyframes loader-sweep {
+    0% { transform: translateX(-100%); }
+    100% { transform: translateX(250%); }
   }
 }
 
+html {
+  color-scheme: light;
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background:
+    radial-gradient(ellipse 85% 55% at 50% -12%, color-mix(in srgb, var(--color-brand-blue) 26%, transparent), transparent 65%),
+    radial-gradient(ellipse 60% 40% at 100% 0%, color-mix(in srgb, var(--color-brand-navy) 14%, transparent), transparent 60%),
+    linear-gradient(180deg, #dbe6ff 0%, var(--color-bg) 45%, #f7f9ff 100%);
+  background-attachment: fixed;
+  color: var(--color-ink);
+  font-family: var(--font-display);
+  -webkit-font-smoothing: antialiased;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-brand) 22%, transparent);
+  color: var(--color-ink);
+}
+
+/* Fondo del panel de administración — mismo recipe que el body (radiales
+   con color-mix sobre un degradado base), pero acá el acento extra es un
+   rosado suave en vez de más azul: el header ya es navy sólido, así que
+   un segundo acento azul detrás se perdía contra él. Subido un escalón
+   desde la primera versión (10%→18%) para que se note sin dejar de leer
+   como un matiz, no como un cambio de paleta. */
+.fondo-panel-admin {
+  background:
+    radial-gradient(ellipse 75% 50% at 100% 0%, color-mix(in srgb, #f472b6 18%, transparent), transparent 62%),
+    radial-gradient(ellipse 60% 40% at 0% 100%, color-mix(in srgb, var(--color-brand-blue) 13%, transparent), transparent 58%),
+    linear-gradient(180deg, #ffffff 0%, #fceef4 50%, #f8e3ec 100%);
+  background-attachment: fixed;
+}
+
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--color-bg); }
+::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 8px;
+  border: 2px solid var(--color-bg);
+}
+::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+
+.tarjeta {
+  background: var(--color-surface);
+  border: 1.5px solid var(--color-line);
+  border-radius: var(--radius-lg);
+  box-shadow: var(--shadow-xs);
+  transition: box-shadow 0.2s ease, transform 0.2s ease, border-color 0.2s ease;
+}
+
+.tarjeta-hover:hover {
+  box-shadow: var(--shadow-md);
+  transform: translateY(-3px);
+  border-color: var(--color-brand-line);
+}
+
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  font-size: 0.76rem;
+  font-weight: 600;
+  padding: 0.22em 0.65em;
+  border-radius: 999px;
+  white-space: nowrap;
+}
+
+.chip-mono {
+  font-family: var(--font-display);
+  font-size: 0.68rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+.input-portal {
+  /* Traslúcido + blur, mismo nivel que el gradiente del topbar
+     (.gradiente-pigo usa 80% de opacidad y 14px de blur) — para que el
+     buscador y el filtro se sientan del mismo "vidrio", no una caja
+     blanca sólida flotando encima. */
+  background: color-mix(in srgb, var(--color-raised) 80%, transparent);
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  border: 1.5px solid color-mix(in srgb, var(--color-line) 70%, transparent);
+  border-radius: var(--radius-md);
+  transition: border-color 0.15s, box-shadow 0.15s, background 0.15s;
+}
+.input-portal:focus {
+  outline: none;
+  border-color: var(--color-brand);
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand) 15%, transparent);
+  background: var(--color-surface);
+}
+.input-portal::placeholder { color: var(--color-ink-faint); }
+
+/* Gradiente real de PIGO (91deg, navy → azul eléctrico) — mismo valor
+   exacto que usa su sidebar en producción, aplicado aquí al topbar. */
+.gradiente-pigo {
+  /* El azul puro (#0010f1 al 100%) se veía "metálico" — en producción el
+     mismo gradiente luce mucho más apagado, casi todo navy con el azul
+     apenas insinuado. Se suaviza mezclándolo con el navy en vez de dejarlo
+     saturado al máximo. */
+  --gradiente-pigo-fin: color-mix(
+    in srgb,
+    color-mix(in srgb, var(--color-brand-blue) 45%, var(--color-brand-navy)) 88%,
+    var(--color-logo-azul) 12%
+  );
+
+  /* Traslúcido + blur, como el navbar real de producción (backdrop-filter
+     sobre rgba oscuro) — deja adivinarse el video de fondo en vez de tapar
+     todo con un color sólido. */
+  background: linear-gradient(
+    91deg,
+    color-mix(in srgb, var(--color-brand-navy) 80%, transparent) 0%,
+    color-mix(in srgb, var(--gradiente-pigo-fin) 80%, transparent) 100%
+  );
+  backdrop-filter: blur(14px);
+  -webkit-backdrop-filter: blur(14px);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+}
+
+/* Vidrio claro para el panel de proyectos — blanco → beige, translúcido +
+   blur, misma familia visual que .gradiente-pigo (mismo blur, misma idea
+   de dejar ver el video) pero en tonos claros. No reemplaza a .tarjeta:
+   esa la sigue usando el menú del filtro, que debe quedarse sólido y
+   legible como popover flotante, no como panel de fondo. */
+/* Tarjeta individual de la grilla de proyectos — vidrio translúcido con
+   blur, ya no vive dentro de un panel envolvente (se quitó): cada tarjeta
+   flota directo sobre el fondo de video. */
+.tarjeta-proyecto {
+  position: relative;
+  overflow: hidden;
+  -webkit-user-drag: none;
+  user-select: none;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  background: color-mix(in srgb, var(--color-surface) 62%, transparent);
+  border: 1.5px solid color-mix(in srgb, var(--color-line) 60%, transparent);
+  border-radius: var(--radius-md);
+  transition: background 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+.tarjeta-proyecto:hover {
+  background: color-mix(in srgb, var(--color-surface) 80%, transparent);
+  border-color: var(--color-brand-line);
+  /* --shadow-xs (difuminado 3px), no --shadow-sm (8px): con el
+     desplazamiento hacia arriba del hover, una sombra tan difuminada se
+     corría hacia la tarjeta vecina y se sentía como si "chocaran" — no
+     era una colisión real (medido: el tamaño no cambia ni 1px), pero se
+     veía así. Con la sombra más contenida ya no invade el espacio entre
+     tarjetas. */
+  box-shadow: var(--shadow-xs);
+}
+
+/* Mini efecto 1: brillo azul muy tenue en la esquina superior derecha (cerca
+   de la flecha) — acompaña al subrayado sin competir con él, casi
+   imperceptible, solo insinuado. overflow:hidden de arriba lo contiene
+   dentro del radio de la tarjeta. */
+.tarjeta-proyecto::before {
+  content: "";
+  position: absolute;
+  top: -30%;
+  right: -20%;
+  width: 55%;
+  height: 55%;
+  background: radial-gradient(
+    circle,
+    color-mix(in srgb, var(--color-brand-blue) 16%, transparent),
+    transparent 70%
+  );
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  pointer-events: none;
+}
+.tarjeta-proyecto:hover::before {
+  opacity: 1;
+}
+
+/* Ícono de cada fila: se queda neutro puro — más adelante cada proyecto
+   traerá su propio logo real (vía el backend que aún no existe), así que
+   no debe llevar ningún acento de color hardcodeado. */
+.icono-sistema {
+  background: var(--color-neutro-bg);
+  color: var(--color-neutro-texto);
+  transition: box-shadow 0.25s ease, color 0.25s ease;
+}
+
+/* Mini efecto 2: el ícono se tiñe un poco de azul y le aparece un anillo
+   suave alrededor — mismo azul que el subrayado y el brillo de esquina,
+   los tres leen como un solo sistema en vez de tres cosas sueltas. */
+.group:hover .icono-sistema {
+  color: color-mix(in srgb, var(--color-brand-blue) 55%, var(--color-neutro-texto));
+  box-shadow: 0 0 0 4px color-mix(in srgb, var(--color-brand-blue) 10%, transparent);
+}
+
+/* Mini efecto 3: el chip de categoría — mismo lenguaje que el ícono (texto
+   teñido de azul + anillo suave), para cerrar el mismo sistema visual
+   también abajo de la tarjeta, no solo arriba. */
+.chip-categoria {
+  transition: color 0.25s ease, box-shadow 0.25s ease;
+}
+.group:hover .chip-categoria {
+  color: color-mix(in srgb, var(--color-brand-blue) 55%, var(--color-neutro-texto));
+  box-shadow: 0 0 0 3px color-mix(in srgb, var(--color-brand-blue) 10%, transparent);
+}
+
+/* Subrayado azul animado bajo el título — igual que el navbar real de
+   producción (::after con width 0 → 100% al hover). Convive con el
+   whileHover de Framer (el x:4 de deslizamiento) sin pisarlo: uno es CSS
+   puro sobre :hover, el otro es el motion.a de la fila completa. */
+.subrayado-azul {
+  position: relative;
+  display: inline-block;
+}
+.subrayado-azul::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -3px;
+  /* 3px — medido con Playwright simulando distintos devicePixelRatio: a
+     125% de escala de Windows (la más común en laptops corporativos), la
+     altura de cada fila (78px) cae exactamente en el punto medio del
+     píxel físico cada DOS filas (offset alterna 0.883 / 0.383), lo que
+     rasteriza el borde de la línea distinto en filas pares vs impares —
+     el patrón fina/gruesa/fina/gruesa que se reportó. Es una limitación
+     real de rasterizado bajo DPI fraccionario (le pasa a cualquier línea
+     fina de cualquier sitio en esas condiciones, no se elimina al 100%
+     solo con CSS) — subir el grosor reduce cuánto se nota la diferencia
+     relativa entre el redondeo "hacia arriba" y "hacia abajo". */
+  height: 3px;
+  width: 0;
+  background: var(--color-brand-blue);
+  transition: width 0.3s ease;
+}
+.group:hover .subrayado-azul::after {
+  width: 100%;
+}
+
+.marca-forge {
+  background: linear-gradient(90deg, var(--color-brand-navy), var(--color-brand-blue) 60%, var(--color-brand-cyan));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Línea azul que recorre el borde de la tarjeta de login — mismo mecanismo
+   exacto de DevForge (C:\dev\solicitudes-de-desarrollo\app\globals.css →
+   .borde-recorrido): anillo de 1px enmascarado con un conic-gradient que
+   rota, solo la cola azul queda visible. Aquí con el azul eléctrico de
+   PIGO en vez del indigo de DevForge, para que se sienta del mismo
+   sistema que el resto del portal. */
+@property --ang-borde {
+  syntax: "<angle>";
+  initial-value: 0deg;
+  inherits: false;
+}
+
+.borde-recorrido {
+  position: relative;
+}
+.borde-recorrido::before {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: conic-gradient(
+    from var(--ang-borde),
+    transparent 0deg,
+    transparent 300deg,
+    color-mix(in srgb, var(--color-brand-blue) 55%, transparent) 330deg,
+    var(--color-brand-blue-claro) 352deg,
+    transparent 360deg
+  );
+  -webkit-mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask:
+    linear-gradient(#000 0 0) content-box,
+    linear-gradient(#000 0 0);
+  mask-composite: exclude;
+  pointer-events: none;
+  animation: recorrer-borde 7s linear infinite;
+}
+
+@keyframes recorrer-borde {
+  to {
+    --ang-borde: 360deg;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .borde-recorrido::before {
+    animation: none;
+    opacity: 0.4;
+  }
+}
+
+/* Brillo que recorre el texto del pie de página — mismo mecanismo exacto
+   del proyecto DevForge (C:\dev\solicitudes-de-desarrollo, app/globals.css
+   → .texto-recorrido): gradiente de 200% de ancho con un pico angosto de
+   brillo (46%→58%, pico real en 54%) que se desliza con background-position,
+   sobre texto transparente vía background-clip. Solo se le ajustó la
+   paleta: DevForge va de gris tenue a azul claro sobre fondo oscuro
+   genérico; aquí va de blanco tenue (el tono ya usado en este footer) al
+   mismo azul claro de marca, sobre el gradiente navy/azul del footer. */
+.texto-recorrido {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0.55) 0%,
+    rgba(255, 255, 255, 0.55) 46%,
+    color-mix(in srgb, var(--color-brand-blue-claro) 40%, rgba(255, 255, 255, 0.55)) 50%,
+    var(--color-brand-blue-claro) 54%,
+    rgba(255, 255, 255, 0.55) 58%,
+    rgba(255, 255, 255, 0.55) 100%
+  );
+  background-size: 200% 100%;
+  background-repeat: no-repeat;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  /* Dos tiempos distintos dentro del ciclo total (5s):
+       tiempoBarrido = 4s → qué tan rápido recorre la luz el texto
+       tiempoHueco   = 1s → cuánto espera, quieto, antes de volver a arrancar
+     % del keyframe intermedio = tiempoBarrido / duración total = 4/5 = 80%. */
+  animation: recorrer-texto 5s linear infinite;
+}
+
+@keyframes recorrer-texto {
+  0% {
+    background-position: 100% 0;
+  }
+  80% {
+    background-position: 0% 0;
+  }
+  100% {
+    background-position: 0% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .texto-recorrido {
+    animation: none;
+    background-position: 50% 0;
+  }
+}
+
+/* Oculta la barra de scroll nativa sin desactivar el scroll en sí — el
+   overflow-y-auto de la grilla de proyectos sigue siendo el respaldo real
+   por si las tarjetas no caben, pero durante las animaciones de layout
+   (cambiar de categoría, avanzar el carrusel) el alto cambia por una
+   fracción de frame y el navegador la hacía parpadear un instante. */
+.sin-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.sin-scrollbar::-webkit-scrollbar {
+  display: none;
 }

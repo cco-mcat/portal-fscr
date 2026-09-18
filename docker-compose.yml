@@ -1,0 +1,12 @@
+services:
+  portal-fscr:
+    build: .
+    container_name: portal-fscr
+    restart: unless-stopped
+    env_file: .env.local
+    networks:
+      - mis-servicios_mis-servicios-net
+
+networks:
+  mis-servicios_mis-servicios-net:
+    external: true
